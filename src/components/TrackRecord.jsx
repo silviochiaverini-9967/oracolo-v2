@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 import { apiGet } from '../api.js'
 
-// Sezione 2 (F1b): trasparenza totale. Yield mostrato SEMPRE col campione:
-// "+53% su 38 giocate" — mai il numero nudo (selection bias, vedi concept).
-// Le fasce score arriveranno con l'estensione endpoint lato v1.
+// Sezione 2: trasparenza totale = fatti, non rumore statistico.
+// Lo yield compare SOLO con campione >= 30 giocate: "-10% su 3 giocate"
+// non è un dato, è varianza esposta come dato.
+const MIN_CAMPIONE_YIELD = 30
+
 export default function TrackRecord() {
   const { data, error } = useQuery({
     queryKey: ['track-record'],
@@ -22,7 +24,7 @@ export default function TrackRecord() {
             </div>
             <div className="muted" style={{ fontSize: 10.5 }}>
               {m.corretti}/{m.totale} pronostici
-              {m.con_quota > 0 && <> · yield {m.yield_pct > 0 ? '+' : ''}{m.yield_pct}% <b>su {m.con_quota} giocate</b></>}
+              {m.con_quota >= MIN_CAMPIONE_YIELD && <> · yield {m.yield_pct > 0 ? '+' : ''}{m.yield_pct}% <b>su {m.con_quota} giocate</b></>}
             </div>
           </div>
         ))}
