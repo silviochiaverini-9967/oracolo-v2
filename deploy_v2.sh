@@ -1,7 +1,7 @@
 #!/bin/bash
-# Deploy v2: build + copia in /var/www/oracolo_v2 (NON tocca /var/www/oracolo).
 set -euo pipefail
 npm run build
-mkdir -p /var/www/oracolo_v2
+mkdir -p /var/www/oracolo_v2/assets
+rm -rf /var/www/oracolo_v2/assets/*
 cp -r dist/* /var/www/oracolo_v2/
-echo "✅ v2 deployato in /var/www/oracolo_v2"
+echo "✅ v2 deployato (assets ripuliti)"
