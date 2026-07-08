@@ -15,6 +15,8 @@ export default function App() {
           <Route path="/calendario" element={<Placeholder nome="Calendario" />} />
           <Route path="/scout" element={<Placeholder nome="Scout" />} />
           <Route path="/storico" element={<Placeholder nome="Storico" />} />
+          {/* catch-all: path non riconosciuti (incl. /v2 senza slash) → Home */}
+          <Route path="*" element={<Home />} />
         </Routes>
       </main>
     </div>
