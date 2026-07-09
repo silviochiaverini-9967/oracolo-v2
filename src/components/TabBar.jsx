@@ -29,7 +29,7 @@ export default function TabBar() {
     ">
       {TABS.map(t => (
         <NavLink key={t.to} to={t.to} end={t.to === '/'}
-          className={({ isActive }) => `${base} ${isActive ? active : idle} md:flex-row md:gap-3 md:px-4 md:py-2.5 md:text-sm`}>
+          className={({ isActive }) => `${base} ${isActive ? active : idle} md:flex-row md:justify-start md:w-full md:gap-3 md:px-4 md:py-2.5 md:text-sm`}>
           <Icon d={t.icon} />
           <span>{t.label}</span>
         </NavLink>
