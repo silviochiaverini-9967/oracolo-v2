@@ -2,6 +2,7 @@ import { Routes, Route } from 'react-router-dom'
 import TabBar from './components/TabBar.jsx'
 import Home from './pages/Home.jsx'
 import Placeholder from './pages/Placeholder.jsx'
+import PartitaDettaglio from './pages/PartitaDettaglio.jsx'
 
 // Shell responsive: mobile = contenuto sopra + tab bar fissa in basso;
 // desktop (md+) = tab bar-sidebar a sinistra + contenuto a destra.
@@ -16,6 +17,7 @@ export default function App() {
           <Route path="/scout" element={<Placeholder nome="Scout" />} />
           <Route path="/storico" element={<Placeholder nome="Storico" />} />
           {/* catch-all: path non riconosciuti (incl. /v2 senza slash) → Home */}
+          <Route path="/partita/:fixtureId" element={<PartitaDettaglio />} />
           <Route path="*" element={<Home />} />
         </Routes>
       </main>
