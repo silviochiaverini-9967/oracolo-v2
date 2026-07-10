@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { apiGet } from '../api.js'
 
@@ -75,12 +75,23 @@ function Vuoto({ children }) {
 export default function PartitaDettaglio() {
   const { fixtureId } = useParams()
   const navigate = useNavigate()
+  const location = useLocation()
   const [tab, setTab] = useState('stat')
 
+  // nomi squadra: prima da location.state (click dalla home, veloce),
+  // altrimenti fallback su /schede/:id (accesso via URL diretto)
+  const fromState = location.state || {}
   const { data, isLoading, error } = useQuery({
     queryKey: ['partita-stats', fixtureId],
     queryFn: () => apiGet(`/partita/${fixtureId}/stats`),
   })
+  const { data: scheda } = useQuery({
+    queryKey: ['scheda-nomi', fixtureId],
+    queryFn: () => apiGet(`/schede/${fixtureId}`),
+    enabled: !fromState.casa,  // solo se i nomi non arrivano dallo state
+  })
+  const nomeCasa = fromState.casa || scheda?.squadra_casa || 'Casa'
+  const nomeTra = fromState.trasferta || scheda?.squadra_trasferta || 'Trasferta'
 
   if (isLoading) return <div className="py-10 text-center text-sm text-muted">Caricamento partita…</div>
   if (error) return <div className="py-10 text-center text-sm text-muted">Partita non trovata.</div>
@@ -96,16 +107,16 @@ export default function PartitaDettaglio() {
 
       {/* header */}
       <div className="rounded-xl border border-border bg-surface p-4">
-        <div className="text-[11px] text-muted">{data.campionato}</div>
+        <div className="text-[11px] text-muted">{fromState.campionato || scheda?.campionato || ''}</div>
         <div className="mt-1 flex items-center justify-between gap-2">
-          <span className="flex-1 text-right text-base font-bold">{data.squadra_casa}</span>
+          <span className="flex-1 text-right text-base font-bold">{nomeCasa}</span>
           <span className="shrink-0 px-2 text-lg font-extrabold tabular-nums">
             {giocata ? `${data.gol_casa} – ${data.gol_trasferta}` : 'vs'}
           </span>
-          <span className="flex-1 text-left text-base font-bold">{data.squadra_trasferta}</span>
+          <span className="flex-1 text-left text-base font-bold">{nomeTra}</span>
         </div>
-        {data.arbitro && data.arbitro !== 'null' && (
-          <div className="mt-2 text-center text-[11px] text-muted">Arbitro: {data.arbitro}</div>
+        {scheda?.arbitro && scheda.arbitro !== 'null' && scheda.arbitro !== '' && (
+          <div className="mt-2 text-center text-[11px] text-muted">Arbitro: {scheda.arbitro}</div>
         )}
       </div>
 
@@ -128,8 +139,8 @@ export default function PartitaDettaglio() {
           giocata ? (
             <div>
               <div className="mb-3 flex justify-between text-[11px] font-semibold uppercase tracking-wide">
-                <span style={{ color: 'var(--accent)' }}>{data.squadra_casa}</span>
-                <span style={{ color: 'var(--blue)' }}>{data.squadra_trasferta}</span>
+                <span style={{ color: 'var(--accent)' }}>{nomeCasa}</span>
+                <span style={{ color: 'var(--blue)' }}>{nomeTra}</span>
               </div>
               <StatRow label="Possesso" casa={sc.possesso} tra={st.possesso} suffix="%" />
               <StatRow label="Tiri totali" casa={sc.tiri_totali} tra={st.tiri_totali} />
